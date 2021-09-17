@@ -19,7 +19,7 @@ echo -ne "\nhttps://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for
 sudo apt-get update
 
 # Install dependencies
-sudo apt-get install -y zsh curl git fonts-font-awasome
+sudo apt-get install -y zsh curl git fonts-font-awesome
 
 warn "Please type \"exit\" when the following command put you into the zsh. Otherwise installation process can't be continue!"
 read -p "Press any key to continue.. " -n 1 -r
