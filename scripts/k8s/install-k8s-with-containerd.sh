@@ -1,5 +1,13 @@
 #!/bin/bash
 
+LIBRARY_PATH="../../lib/"
+
+cd "$(dirname "$0")"
+# source all necessary files
+for f in $LIBRARY_PATH*; do
+ . $f
+done
+
 
 # Load the br_netfilter module for kubernetes and overlay for the containerd
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf

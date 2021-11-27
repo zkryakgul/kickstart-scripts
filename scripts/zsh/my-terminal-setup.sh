@@ -1,18 +1,30 @@
 #!/bin/bash
 
+LIBRARY_PATH="../../lib/"
+
+cd "$(dirname "$0")"
+# source all necessary files
+for f in $LIBRARY_PATH*; do
+ . $f
+done
+
 PLUGINS="git zsh-syntax-highlighting zsh-autosuggestions"
 THEME="powerlevel10k/powerlevel10k"
 
-echo "Warning: you need to install the Meslo Nerd Font for the best usage. You can install it with the following instructions: "
-echo "https://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10khttps://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k"
+warn "Warning:"
+echo -ne "\nYou need to install the Meslo Nerd Font for the best usage. You can install it with the following instructions: \n"
+echo -ne "\nhttps://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10khttps://github.com/romkatv/powerlevel10k#meslo-nerd-font-patched-for-powerlevel10k\n\n\n"
 
 # Update
 sudo apt-get update
 
 # Install dependencies
-sudo apt-get install -y zsh curl git fonts-font-awasome
+sudo apt-get install -y zsh curl git fonts-font-awesome
 
+warn "Please type \"exit\" when the following command put you into the zsh. Otherwise installation process can't be continue!"
+read -p "Press any key to continue.. " -n 1 -r
 # Install oh-my-zsh
+
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Auto-suggestions plugin
