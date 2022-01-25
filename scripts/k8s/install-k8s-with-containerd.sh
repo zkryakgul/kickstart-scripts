@@ -69,6 +69,14 @@ sudo systemctl restart containerd
 sudo sed -i "/SystemdCgroup/c\SystemdCgroup = true" /etc/containerd/config.toml
 sudo systemctl restart containerd
 
+# Setup crictl conf file for prevent describe runtime endpoint on every command
+cat <<EOF | sudo tee /etc/crictl.yaml
+runtime-endpoint: unix:///run/containerd/containerd.sock
+image-endpoint: unix:///run/containerd/containerd.sock
+timeout: 10
+debug: false
+EOF
+
 ###### Kubernetes Components Installation ######
 
 # Get the google's pub key
