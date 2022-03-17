@@ -1,19 +1,14 @@
 #!/bin/bash
 
+set -e 
+set -o pipefail
+
 LIBRARY_PATH="../../lib/"
 
 # source all necessary files
 for f in $LIBRARY_PATH*; do
  . $f
 done
-
-
-function get_latest_release() {
-  curl --silent "https://api.github.com/repos/$1/releases/latest" | # Get latest release from GitHub api
-    grep '"tag_name":' |                                            # Get tag line
-    sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
-}
-
 
 function phase1() {
 
@@ -66,7 +61,7 @@ sudo apt-get install -y \
 stage "Getting the latest relase of nerdctl with containerd"
 
 # Find the latest release of nerdctl full
-LT_RLS="$(get_latest_release containerd/nerdctl | sed -e "s/v//g")"
+LT_RLS="$(get_latest_release_from_github containerd/nerdctl | sed -e "s/v//g")"
 
 # get the nerdctl full binaries
 wget https://github.com/containerd/nerdctl/releases/download/v$LT_RLS/nerdctl-full-$LT_RLS-linux-amd64.tar.gz
@@ -87,7 +82,7 @@ stage "Update grub"
 
 sudo update-grub
 
-stage "Enabling CPU, CPUSET, and I/O delegation"
+stage "Enable CPU, CPUSET, and I/O delegation"
 
 # Enabling CPU, CPUSET, and I/O delegation
 sudo mkdir -p /etc/systemd/system/user@.service.d
@@ -150,6 +145,14 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 rm -rf phase1.complate
 rm -rf nerdctl-full-*.tar.gz
+
+if [[ $SHELL == "/bin/bash" ]]; then
+	echo "alias docker=\"sudo nerdctl --namespace k8s.io\"" >> ~/.bashrc
+	info "Docker alias added for nerdctl. Please logout and re-login for alias changes effect."
+elif [[ $SHELL == "/bin/zsh" ]]; then
+	echo "alias docker=\"sudo nerdctl --namespace k8s.io\"" >> ~/.zshrc
+	info "Docker alias added for nerdctl. Please logout and re-login for alias changes effect."
+fi
 
 success "\n\n\n Installation complate! You can now init your cluster.\n\n"
 }

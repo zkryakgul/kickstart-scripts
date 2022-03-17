@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e 
+set -o pipefail
+
 LIBRARY_PATH="../../lib/"
 
 cd "$(dirname "$0")"
