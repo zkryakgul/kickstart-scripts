@@ -20,9 +20,15 @@ function setup_weavenet() {
 function setup_metallb() {
 	stage "Prepare k8s for metallb"
 
+	set +e 
+	set +o pipefail
+
 	kubectl get configmap kube-proxy -n kube-system -o yaml | \
 	sed -e "s/strictARP: false/strictARP: true/" | \
 	kubectl diff -f - -n kube-system
+
+	set -e 
+	set -o pipefail
 
 	warn "Please inspect the changes of kube-proxy above. Metallb needs to be strictARP option is set to true."
 
