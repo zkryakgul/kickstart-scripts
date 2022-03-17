@@ -149,6 +149,7 @@ sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
 rm -rf phase1.complate
+rm -rf nerdctl-full-*.tar.gz
 
 success "\n\n\n Installation complate! You can now init your cluster.\n\n"
 }
