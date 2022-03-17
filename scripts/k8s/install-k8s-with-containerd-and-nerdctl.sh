@@ -81,7 +81,7 @@ stage "Enabling cgroup v2"
 
 # Enabling cgroup v2 
 # To boot the host with cgroup v2, add the following string to the GRUB_CMDLINE_LINUX line in /etc/default/grub and then run `sudo update-grub`.
-sudo sed -i "s/GRUB_CMDLINE_LINUX=""/GRUB_CMDLINE_LINUX=\"systemd.unified_cgroup_hierarchy=1\"/g"
+sudo sed -i "s/GRUB_CMDLINE_LINUX=\"\"/GRUB_CMDLINE_LINUX=\"systemd.unified_cgroup_hierarchy=1\"/g" /etc/default/grub
 
 stage "Update grub"
 
