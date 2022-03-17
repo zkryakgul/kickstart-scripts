@@ -15,3 +15,7 @@ function success {
 function warn {
     printf "${YELLOW}$@${NC}\n"
 }
+
+function stage {
+    printf "\n\n############ ${YELLOW}$@${NC} ############\n\n"
+}
