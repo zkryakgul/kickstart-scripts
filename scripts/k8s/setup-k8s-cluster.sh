@@ -121,3 +121,8 @@ if [ "$EUID" -eq 0 ]
   then echo "Please run this script as a regular user!"
   exit
 fi
+
+setup_weavenet
+setup_metallb
+setup_ingress_nginx
+setup_kubernetes_dashboard
