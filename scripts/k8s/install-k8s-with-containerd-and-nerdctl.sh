@@ -59,7 +59,7 @@ sudo apt-get install -y \
     lsb-release \
     libseccomp2
 
-stage "Getting the latest relase of nerdctl with containerd"
+stage "Getting the latest relase of nerdctl"
 
 # Find the latest release of nerdctl full
 LT_RLS="$(get_latest_release_from_github containerd/nerdctl | sed -e "s/v//g")"
@@ -70,8 +70,10 @@ wget https://github.com/containerd/nerdctl/releases/download/v$LT_RLS/nerdctl-fu
 # extract the archive
 sudo tar Cxzvvf /usr/local nerdctl-full-$LT_RLS-linux-amd64.tar.gz
 
+stage "Getting the latest containerd compatible with installed nerdctl"
+
 # Get the compatible version of containerd with nerdctl
-VERSION="$(bin/containerd --version | awk '{print $3}' |  sed -e "s/v//g")"
+VERSION="$(/usr/local/bin/containerd --version | awk '{print $3}' |  sed -e "s/v//g")"
 
 # Download the containerd 
 wget https://github.com/containerd/containerd/releases/download/v$VERSION/cri-containerd-cni-$VERSION-linux-amd64.tar.gz
