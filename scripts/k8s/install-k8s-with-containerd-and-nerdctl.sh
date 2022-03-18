@@ -113,7 +113,7 @@ LT_RLS="$(get_latest_release_from_github containerd/nerdctl | sed -e "s/v//g")"
 wget https://github.com/containerd/nerdctl/releases/download/v$LT_RLS/nerdctl-full-$LT_RLS-linux-amd64.tar.gz
 
 # extract the archive
-sudo tar --skip-old-files Cxzvvf /usr/local nerdctl-full-$LT_RLS-linux-amd64.tar.gz
+sudo tar Cxzvvf /usr/local nerdctl-full-$LT_RLS-linux-amd64.tar.gz --skip-old-files
 
 stage "Configuring containerd"
 
