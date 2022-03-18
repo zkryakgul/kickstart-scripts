@@ -56,7 +56,8 @@ sudo apt-get install -y \
     ca-certificates \
     curl \
     gnupg \
-    lsb-release
+    lsb-release \
+    libseccomp2
 
 stage "Getting the latest relase of nerdctl with containerd"
 
@@ -68,6 +69,15 @@ wget https://github.com/containerd/nerdctl/releases/download/v$LT_RLS/nerdctl-fu
 
 # extract the archive
 sudo tar Cxzvvf /usr/local nerdctl-full-$LT_RLS-linux-amd64.tar.gz
+
+# Get the compatible version of containerd with nerdctl
+VERSION="$(bin/containerd --version | awk '{print $3}' |  sed -e "s/v//g")"
+
+# Download the containerd 
+wget https://github.com/containerd/containerd/releases/download/v$VERSION/cri-containerd-cni-$VERSION-linux-amd64.tar.gz
+
+# Install it
+sudo tar --no-overwrite-dir -C / -xzf cri-containerd-cni-$VERSION-linux-amd64.tar.gz
 
 # newuidmap command needed by rootless-install.sh
 sudo apt install uidmap
@@ -143,8 +153,19 @@ sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
 
+sudo mkdir -p /etc/systemd/system/kubelet.service.d
+
+# Create Systemd Drop-In for Containerd
+cat <<EOF | sudo tee /etc/systemd/system/kubelet.service.d/0-containerd.conf
+[Service]
+Environment="KUBELET_EXTRA_ARGS=--container-runtime=remote --runtime-request-timeout=15m --container-runtime-endpoint=unix:///run/containerd/containerd.sock"
+EOF
+
+sudo systemctl daemon-reload
+
 rm -rf phase1.complate
 rm -rf nerdctl-full-*.tar.gz
+rm -rf cri-containerd-cni-*.tar.gz
 
 if [[ $SHELL == "/bin/bash" ]]; then
 	echo "alias docker=\"sudo nerdctl --namespace k8s.io\"" >> ~/.bashrc
