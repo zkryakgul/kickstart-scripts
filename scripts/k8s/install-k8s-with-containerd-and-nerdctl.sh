@@ -60,31 +60,6 @@ sudo apt-get install -y \
     libseccomp2 \
     bash-completion
 
-stage "Getting the latest relase of nerdctl"
-
-# Find the latest release of nerdctl full
-LT_RLS="$(get_latest_release_from_github containerd/nerdctl | sed -e "s/v//g")"
-
-# get the nerdctl full binaries
-wget https://github.com/containerd/nerdctl/releases/download/v$LT_RLS/nerdctl-full-$LT_RLS-linux-amd64.tar.gz
-
-# extract the archive
-sudo tar Cxzvvf /usr/local nerdctl-full-$LT_RLS-linux-amd64.tar.gz
-
-stage "Getting the latest containerd compatible with installed nerdctl"
-
-# Get the compatible version of containerd with nerdctl
-VERSION="$(/usr/local/bin/containerd --version | awk '{print $3}' |  sed -e "s/v//g")"
-
-# Download the containerd 
-wget https://github.com/containerd/containerd/releases/download/v$VERSION/cri-containerd-cni-$VERSION-linux-amd64.tar.gz
-
-# Install it
-sudo tar Cxzvvf / cri-containerd-cni-$VERSION-linux-amd64.tar.gz
-
-# newuidmap command needed by rootless-install.sh
-sudo apt install uidmap
-
 stage "Enabling cgroup v2"
 
 # Enabling cgroup v2 
@@ -116,11 +91,29 @@ exit 0
 
 function phase2() {
 
-stage "Installing containerd in rootless mode with nerdctl"	
+stage "Installing containerd"	
 
-containerd-rootless-setuptool.sh install
+# Get the keyring for the docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg    
 
-sudo systemctl enable --now containerd
+# Add the docker repo for containerd installation
+echo \
+  "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+sudo apt-get install containerd.io
+
+stage "Getting the latest relase of nerdctl"
+
+# Find the latest release of nerdctl full
+LT_RLS="$(get_latest_release_from_github containerd/nerdctl | sed -e "s/v//g")"
+
+# get the nerdctl full binaries
+wget https://github.com/containerd/nerdctl/releases/download/v$LT_RLS/nerdctl-full-$LT_RLS-linux-amd64.tar.gz
+
+# extract the archive
+sudo tar --skip-old-files Cxzvvf /usr/local nerdctl-full-$LT_RLS-linux-amd64.tar.gz
 
 stage "Configuring containerd"
 
