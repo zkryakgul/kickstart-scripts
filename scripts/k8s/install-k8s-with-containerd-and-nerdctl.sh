@@ -79,7 +79,7 @@ VERSION="$(/usr/local/bin/containerd --version | awk '{print $3}' |  sed -e "s/v
 wget https://github.com/containerd/containerd/releases/download/v$VERSION/cri-containerd-cni-$VERSION-linux-amd64.tar.gz
 
 # Install it
-sudo tar --no-overwrite-dir -C / -xzf cri-containerd-cni-$VERSION-linux-amd64.tar.gz
+sudo tar -C / -xzf cri-containerd-cni-$VERSION-linux-amd64.tar.gz
 
 # newuidmap command needed by rootless-install.sh
 sudo apt install uidmap
