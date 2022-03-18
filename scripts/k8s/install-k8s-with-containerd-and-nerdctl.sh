@@ -57,7 +57,8 @@ sudo apt-get install -y \
     curl \
     gnupg \
     lsb-release \
-    libseccomp2
+    libseccomp2 \
+    bash-completion
 
 stage "Getting the latest relase of nerdctl"
 
@@ -171,6 +172,7 @@ rm -rf cri-containerd-cni-*.tar.gz
 
 if [[ $SHELL == "/bin/bash" ]]; then
 	echo "alias docker=\"sudo nerdctl --namespace k8s.io\"" >> ~/.bashrc
+    echo 'source <(kubectl completion bash)' >> ~/.bashrc
 	info "Docker alias added for nerdctl. Please logout and re-login for alias changes effect."
 elif [[ $SHELL == "/bin/zsh" ]]; then
 	echo "alias docker=\"sudo nerdctl --namespace k8s.io\"" >> ~/.zshrc
