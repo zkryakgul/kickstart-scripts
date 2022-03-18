@@ -132,3 +132,8 @@ setup_weavenet
 setup_metallb
 setup_ingress_nginx
 setup_kubernetes_dashboard
+
+kubectl get all -A
+
+warn "If Metallb speaker status become CreateContainerConfigError due to memberlist error run the command below:"
+info "kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey=\"\$(openssl rand -base64 128)\""
