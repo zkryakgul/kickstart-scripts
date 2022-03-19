@@ -112,8 +112,27 @@ LT_RLS="$(get_latest_release_from_github containerd/nerdctl | sed -e "s/v//g")"
 # get the nerdctl full binaries
 wget https://github.com/containerd/nerdctl/releases/download/v$LT_RLS/nerdctl-full-$LT_RLS-linux-amd64.tar.gz
 
+#
+# We want the use containerd binaries first which installed from docker repo
+# So we need to copy nerdctl binaries under the /usr/bin if they not exists
+# After that we put nerdctl dependencies under the /usr/local
+# (We need to do it that way because of /usr/local/bin comes first in the $PATH)
+#
+
+# Create workdir for nerdctl files
+mkdir -p resources/nerdctl
+
 # extract the archive
-sudo tar Cxzvvf /usr/local nerdctl-full-$LT_RLS-linux-amd64.tar.gz --skip-old-files
+sudo tar Cxzvvf resources/nerdctl nerdctl-full-$LT_RLS-linux-amd64.tar.gz --skip-old-files
+
+# cp binaries under the /usr/bin if not exist
+sudo cp -n resources/nerdctl/bin/* /usr/bin/
+
+# remove binaries 
+rm -rf resources/nerdctl/bin
+
+# copy rest of the files under the /usr/local
+sudo cp -r -n resources/nerdctl/* /usr/local
 
 stage "Configuring containerd"
 
