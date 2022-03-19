@@ -84,7 +84,7 @@ sudo systemctl daemon-reload
 
 success "\n\n\n Installation phase1 complate! Please reboot your server and run this script again!\n\n"
 
-touch phase1.complate
+touch .phase1.complete
 exit 0
 }
 
@@ -181,7 +181,7 @@ EOF
 
 sudo systemctl daemon-reload
 
-rm -rf phase1.complate
+rm -rf .phase1.complete
 rm -rf nerdctl-full-*.tar.gz
 rm -rf cri-containerd-cni-*.tar.gz
 
@@ -202,7 +202,7 @@ if [ "$EUID" -eq 0 ]
   exit
 fi
 
-if test -f "phase1.complate"; then
+if test -f ".phase1.complete"; then
     phase2
 else
     phase1    
