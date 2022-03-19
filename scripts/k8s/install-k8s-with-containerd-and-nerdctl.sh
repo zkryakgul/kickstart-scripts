@@ -134,6 +134,9 @@ sudo rm -rf resources/nerdctl/bin
 # copy rest of the files under the /usr/local
 sudo cp -r -n resources/nerdctl/* /usr/local
 
+# remove nerdctl's containerd.service
+sudo rm -rf /usr/local/lib/systemd/system/containerd.service
+
 stage "Configuring containerd"
 
 # Configure containerd
