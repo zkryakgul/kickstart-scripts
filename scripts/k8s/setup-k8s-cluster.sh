@@ -77,7 +77,7 @@ function setup_ingress_nginx() {
     info "Ingress nginx service will be installed on LoadBalancer mode. So it creates an endpoint which using an ip from metallb address pool."
 
 	wget -O resources/ingress-nginx/deploy.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/baremetal/deploy.yaml
-    sed -i "s/type: ClusterIP/type: LoadBalancer/g" resources/ingress-nginx/deploy.yaml
+    sed -i "s/type: NodePort/type: LoadBalancer/g" resources/ingress-nginx/deploy.yaml
     sed -i "/election-id=ingress-controller-leader/a\ \ \ \ \ \ \ \ \ \ \ \ - --publish-service=\$(POD_NAMESPACE)/ingress-nginx-controller" resources/ingress-nginx/deploy.yaml
     kubectl apply -f resources/ingress-nginx/deploy.yaml
 
