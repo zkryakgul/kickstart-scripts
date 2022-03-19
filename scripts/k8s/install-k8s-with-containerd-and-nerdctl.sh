@@ -129,7 +129,7 @@ sudo tar Cxzvvf resources/nerdctl nerdctl-full-$LT_RLS-linux-amd64.tar.gz --skip
 sudo cp -n resources/nerdctl/bin/* /usr/bin/
 
 # remove binaries 
-rm -rf resources/nerdctl/bin
+sudo rm -rf resources/nerdctl/bin
 
 # copy rest of the files under the /usr/local
 sudo cp -r -n resources/nerdctl/* /usr/local
