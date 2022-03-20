@@ -10,11 +10,28 @@ for f in $LIBRARY_PATH*; do
  . $f
 done
 
+function Help()
+{
+   # Display Help
+   echo "Bootup a kubernetes cluster with minimal dependencies."
+   echo
+   echo "Syntax: ./setup-k8s-cluster [-w|-m|-i|-d|-h]"
+   echo "options:"
+   echo "-w     installs the weavenet components to the cluster."
+   echo "-m     installs the metallb components to the cluster."
+   echo "-i     installs the ingress-nginx components to the cluster"
+   echo "-d     installs the kubernetes-dashboard components to the cluster."
+   echo "-h     prints this help message."
+   echo
+}
+
 function setup_weavenet() {
 	stage "Installing weavenet"
 	kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
 
-	info "Weavenet installation completed."
+	info "Weavenet installation completed. Check the weavenet status with the following command and if its up and running then continue to next step."
+	info "$ kubectl get all -n kube-system"
+	info "Next step is setup metallb with: ./setup-k8s-cluster.sh -m"
 }
 
 function setup_metallb() {
@@ -67,7 +84,12 @@ EOF
 
 	kubectl apply -f resources/metallb/config.yaml -n metallb-system
 
-	info "Metallb installation completed." 
+	info "Metallb installation completed. Check the weavenet status with the following command and if its up and running then continue to next step."
+	info "$ kubectl get all -n metallb-system"
+	info "Next step is setup ingress-nginx with: ./setup-k8s-cluster.sh -i"
+
+	warn "If Metallb speaker status become CreateContainerConfigError due to memberlist error run the command below:"
+  info "kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey=\"\$(openssl rand -base64 128)\""
 
 }
 
@@ -81,7 +103,9 @@ function setup_ingress_nginx() {
     sed -i "/election-id=ingress-controller-leader/a\ \ \ \ \ \ \ \ \ \ \ \ - --publish-service=\$(POD_NAMESPACE)/ingress-nginx-controller" resources/ingress-nginx/deploy.yaml
     kubectl apply -f resources/ingress-nginx/deploy.yaml
 
-    info "Ingress Nginx installation completed." 
+    info "Ingress Nginx installation completed. Check the weavenet status with the following command and if its up and running then continue to next step."
+	  info "$ kubectl get all -n ingress-nginx"
+	  info "Next step is setup kubernetes-dashboard with: ./setup-k8s-cluster.sh -d"
 }
 
 function setup_kubernetes_dashboard() {
@@ -121,6 +145,10 @@ spec:
 EOF
 
     kubectl apply -f resources/kubernetes-dashboard/ingress.yaml
+
+    info "kubernetes-dashboard installation complete."
+
+    info "Congratulations, you have installed all components for inital cluster!"
 }
 
 if [ "$EUID" -eq 0 ]
@@ -128,12 +156,29 @@ if [ "$EUID" -eq 0 ]
   exit
 fi
 
-setup_weavenet
-setup_metallb
-setup_ingress_nginx
-setup_kubernetes_dashboard
+# Get the options
+while getopts ":h" option; do
+   case $option in
+      h) # display Help
+         Help
+         exit;;
+      w)
+         setup_weavenet
+         exit;;
+      m)
+         setup_metallb
+         exit;;
+      i)
+         setup_ingress_nginx
+         exit;;
+      d)
+         setup_kubernetes_dashboard
+         exit;;
+      \?) # incorrect option
+         echo "Error: Invalid option"
+         exit;;
+   esac
+done
+
 
 kubectl get all -A
-
-warn "If Metallb speaker status become CreateContainerConfigError due to memberlist error run the command below:"
-info "kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey=\"\$(openssl rand -base64 128)\""

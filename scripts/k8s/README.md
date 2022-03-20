@@ -42,3 +42,12 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 kubectl taint node $(hostname) node-role.kubernetes.io/master:NoSchedule-
 ```
+
+## Setup the cluster minimal dependiencies and usefull tools
+
+- Run the `setup-k8s-cluster.sh` with the needed parameters. To see the parameters:
+```
+./setup-k8s-cluster.sh -h
+```
+
+> :warning: **Note**: Run the command parameters one by one.!
