@@ -137,6 +137,16 @@ sudo cp -r -n resources/nerdctl/* /usr/local
 # remove nerdctl's containerd.service
 sudo rm -rf /usr/local/lib/systemd/system/containerd.service
 
+# Fix buildkitd execstart path
+sudo sed -i "s|ExecStart=/usr/local/bin/buildkitd|ExecStart=/usr/bin/buildkitd|g" /usr/local/lib/systemd/system/buildkit.service
+
+# Reload daemon
+sudo systemctl daemon-reload
+
+# Enable and start buildkit service
+sudo systemctl enable buildkit.service
+sudo systemctl start buildkit.service
+
 stage "Configuring containerd"
 
 # Configure containerd
