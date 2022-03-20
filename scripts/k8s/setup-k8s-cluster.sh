@@ -157,7 +157,7 @@ if [ "$EUID" -eq 0 ]
 fi
 
 # Get the options
-while getopts ":h" option; do
+while getopts ":h:w:m:i:d:" option; do
    case $option in
       h) # display Help
          Help
