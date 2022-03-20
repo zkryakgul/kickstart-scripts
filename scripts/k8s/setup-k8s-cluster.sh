@@ -174,7 +174,7 @@ while getopts ":h:w:m:i:d:" option; do
       d)
          setup_kubernetes_dashboard
          exit;;
-      \?) # incorrect option
+      *) # incorrect option
          echo "Error: Invalid option"
          exit;;
    esac
