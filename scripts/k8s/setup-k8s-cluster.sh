@@ -87,7 +87,7 @@ EOF
   kubectl apply -f resources/metallb/config.yaml -n metallb-system
 
   echo -ne "\n\n"
-  info "Metallb installation completed. Check the weavenet status with the following command and if its up and running then continue to next step."
+  info "Metallb installation completed. Check the metallb status with the following command and if its up and running then continue to next step."
   info "$ kubectl get all -n metallb-system"
   info "Next step is setup ingress-nginx with: ./setup-k8s-cluster.sh -i"
 
@@ -108,7 +108,7 @@ function setup_ingress_nginx() {
     kubectl apply -f resources/ingress-nginx/deploy.yaml
 
     echo -ne "\n\n"
-    info "Ingress Nginx installation completed. Check the weavenet status with the following command and if its up and running then continue to next step."
+    info "Ingress Nginx installation completed. Check the ingress-nginx status with the following command and if its up and running then continue to next step."
     info "$ kubectl get all -n ingress-nginx"
     info "Next step is setup kubernetes-dashboard with: ./setup-k8s-cluster.sh -d"
     echo -ne "\n\n"
