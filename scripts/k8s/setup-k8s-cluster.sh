@@ -154,7 +154,7 @@ EOF
 
     echo -ne "\n\n"
     info "kubernetes-dashboard installation complete."
-    info "To create admin token follow instructions in: https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md"
+    info "To create admin token follow the instructions in: https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md"
     info "Congratulations, you have installed all components for inital cluster!"
     echo -ne "\n\n"
 }
