@@ -62,26 +62,28 @@ function setup_metallb() {
 
   stage "Installing metallb"
 
-  kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/namespace.yaml
-  kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.12.1/manifests/metallb.yaml
+  kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.12/config/manifests/metallb-native.yaml
+
   
   info "Enter the start-end ip addresses for default metallb address pool:"
   read -p 'Start: ' startAddr
   read -p 'End: ' endAddr
 
 cat <<EOF | sudo tee resources/metallb/config.yaml
-apiVersion: v1
-kind: ConfigMap
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
 metadata:
+  name: default-pool
   namespace: metallb-system
-  name: config
-data:
-  config: |
-    address-pools:
-    - name: default
-      protocol: layer2
-      addresses:
-      - $startAddr-$endAddr
+spec:
+  addresses:
+  - $startAddr-$endAddr 
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: default-advertisement
+  namespace: metallb-system
 EOF
 
   kubectl apply -f resources/metallb/config.yaml -n metallb-system
@@ -102,7 +104,7 @@ function setup_ingress_nginx() {
     stage "Installing Ingress Nginx"
     info "Ingress nginx service will be installed on LoadBalancer mode. So it creates an endpoint which using an ip from metallb address pool."
 
-  wget -O resources/ingress-nginx/deploy.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.1.1/deploy/static/provider/baremetal/deploy.yaml
+    wget -O resources/ingress-nginx/deploy.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/baremetal/deploy.yaml
     sed -i "s/type: NodePort/type: LoadBalancer/g" resources/ingress-nginx/deploy.yaml
     sed -i "/election-id=ingress-controller-leader/a\ \ \ \ \ \ \ \ \ \ \ \ - --publish-service=\$(POD_NAMESPACE)/ingress-nginx-controller" resources/ingress-nginx/deploy.yaml
     kubectl apply -f resources/ingress-nginx/deploy.yaml
@@ -119,9 +121,9 @@ function setup_kubernetes_dashboard() {
   stage "Installing Kubernetes dashboard"
 
   LT_RLS=$(get_latest_release_from_github kubernetes/dashboard)
-    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/$LT_RLS/aio/deploy/recommended.yaml
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/$LT_RLS/aio/deploy/recommended.yaml
 
-    read -p 'Enter the kubernetes dashboard FQDN for the ingress definition(ex: dashboard.k8s.local): ' dashboard_fqdn
+  read -p 'Enter the kubernetes dashboard FQDN for the ingress definition(ex: dashboard.k8s.local): ' dashboard_fqdn
 
 cat <<EOF | sudo tee resources/kubernetes-dashboard/ingress.yaml
 kind: Ingress
@@ -130,9 +132,9 @@ metadata:
   name: kubernetes-dashboard
   namespace: kubernetes-dashboard
   annotations:
-    kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/backend-protocol: HTTPS
 spec:
+  ingressClassName: nginx
   tls:
     - hosts:
         - $dashboard_fqdn
