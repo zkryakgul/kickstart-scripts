@@ -27,7 +27,7 @@ function Help()
 
 function setup_weavenet() {
   stage "Installing weavenet"
-  kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+  kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 
   echo -ne "\n\n"
   info "Weavenet installation completed. Check the weavenet status with the following command and if its up and running then continue to next step."
@@ -189,3 +189,5 @@ while getopts ":hZ:wZ:mZ:iZ:dZ:" option; do
          exit;;
    esac
 done
+
+Help
