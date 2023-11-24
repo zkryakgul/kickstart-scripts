@@ -130,7 +130,7 @@ function setup_kubernetes_dashboard() {
     helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
                  --create-namespace --namespace kubernetes-dashboard \
                  --set nginx.enabled=false \
-                 --set app.ingress.hosts="[$dashboard_fqdn]" \
+                 --set app.ingress.hosts="{$dashboard_fqdn}" \
                  --version 7.0.0-alpha1
 
     echo -ne "\n\n"
