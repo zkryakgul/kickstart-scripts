@@ -113,48 +113,24 @@ function setup_ingress_nginx() {
     echo -ne "\n\n"
 }
 
+function setup_helm() {
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    chmod 700 get_helm.sh
+    ./get_helm.sh
+}
+
 function setup_kubernetes_dashboard() {
+    stage "Installing Kubernetes dashboard"
+    
+    setup_helm
 
-  stage "Installing Kubernetes dashboard"
+    helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+    read -p 'Enter the kubernetes dashboard FQDN for the ingress definition(ex: dashboard.k8s.local): ' dashboard_fqdn
 
-  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
-
-  info "Kubernetes-dashboard now needs to cert-manager. Waiting for the cert-manager become ready..."
-  sleep 120
-
-  LT_RLS=$(get_latest_release_from_github kubernetes/dashboard)
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/$LT_RLS/charts/kubernetes-dashboard.yaml
-
-  read -p 'Enter the kubernetes dashboard FQDN for the ingress definition(ex: dashboard.k8s.local): ' dashboard_fqdn
-
-cat <<EOF | sudo tee resources/kubernetes-dashboard/ingress.yaml
-kind: Ingress
-apiVersion: networking.k8s.io/v1
-metadata:
-  name: kubernetes-dashboard
-  namespace: kubernetes-dashboard
-  annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - $dashboard_fqdn
-      secretName: kubernetes-dashboard
-  rules:
-    - host: $dashboard_fqdn
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: kubernetes-dashboard
-                port:
-                  number: 443
-EOF
-
-    kubectl apply -f resources/kubernetes-dashboard/ingress.yaml
+    helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
+                 --create-namespace --namespace kubernetes-dashboard \
+                 --set nginx.enabled=true \
+                 --set app.ingress.hosts=["$dashboard_fqdn"]
 
     echo -ne "\n\n"
     info "kubernetes-dashboard installation complete."
