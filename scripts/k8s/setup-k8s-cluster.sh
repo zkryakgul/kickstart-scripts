@@ -13,7 +13,7 @@ done
 function Help()
 {
    # Display Help
-   echo "Bootup a kubernetes cluster with minimal dependencies."
+   echo "Bootup a kubernetes cluster with minimal dependencies. Requires access to cluster with kubectl"
    echo
    echo "Syntax: ./setup-k8s-cluster [-w|-m|-i|-d|-h]"
    echo "options:"
@@ -160,11 +160,6 @@ EOF
     info "Congratulations, you have installed all components for inital cluster!"
     echo -ne "\n\n"
 }
-
-if [ "$EUID" -eq 0 ]
-  then echo "Please run this script as a regular user!"
-  exit
-fi
 
 # Get the options
 while getopts ":hZ:wZ:mZ:iZ:dZ:" option; do
