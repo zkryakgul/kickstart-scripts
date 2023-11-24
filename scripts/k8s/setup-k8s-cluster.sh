@@ -121,7 +121,7 @@ function setup_kubernetes_dashboard() {
   stage "Installing Kubernetes dashboard"
 
   LT_RLS=$(get_latest_release_from_github kubernetes/dashboard)
-  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/$LT_RLS/aio/deploy/recommended.yaml
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/$LT_RLS/charts/kubernetes-dashboard.yaml
 
   read -p 'Enter the kubernetes dashboard FQDN for the ingress definition(ex: dashboard.k8s.local): ' dashboard_fqdn
 
