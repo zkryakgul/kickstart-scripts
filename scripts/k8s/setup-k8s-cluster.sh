@@ -117,6 +117,11 @@ function setup_kubernetes_dashboard() {
 
   stage "Installing Kubernetes dashboard"
 
+  kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
+
+  info "Kubernetes-dashboard now needs to cert-manager. Waiting for the cert-manager become ready..."
+  sleep 120
+
   LT_RLS=$(get_latest_release_from_github kubernetes/dashboard)
   kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/$LT_RLS/charts/kubernetes-dashboard.yaml
 
