@@ -124,12 +124,18 @@ function setup_kubernetes_dashboard() {
     
     setup_helm
 
+    # 
+    kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.2/cert-manager.yaml
+
+    sleep 90
+
     helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
     read -p 'Enter the kubernetes dashboard FQDN for the ingress definition(ex: dashboard.k8s.local): ' dashboard_fqdn
 
     helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
                  --create-namespace --namespace kubernetes-dashboard \
                  --set nginx.enabled=false \
+                 --set cert-manager.enabled=false \
                  --set app.ingress.hosts="{$dashboard_fqdn}" \
                  --set app.ingress.ingressClassName="nginx" \
                  --version 7.0.0-alpha1
